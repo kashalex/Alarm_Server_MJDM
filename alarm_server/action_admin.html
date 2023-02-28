@@ -1,0 +1,36 @@
+<!-- / Вывод модуля XRAY -->
+<p>[#module name="xray" action="service" cycle="alarm_server"#]</p>
+<!-- / Вывод модуля XRAY -->
+
+<!-- / Вывод Вкладок -->
+<ul class="nav nav-tabs">
+ <li [#if TAB=="event" || TAB==""#] class="active"[#endif#]><a href="?tab=event">События</a></li>
+ <li [#if TAB=="cam"#] class="active"[#endif#]><a href="?tab=cam">Камеры</a></li>  
+</ul>
+<div>&nbsp;</div> 
+
+
+[#if TAB="event" || TAB=""#]
+	[#inc search_event.html#]
+[#endif TAB#]
+
+[#if TAB="cam"#]
+
+	[#if VIEW_MODE=""#]
+		 [#inc search_camera.html#]		
+	[#endif#]	
+	
+	[#if VIEW_MODE="add_cam"#]
+ 		 [#inc alarm_server_camera_edit.html#]
+	[#endif#]
+	
+	[#if VIEW_MODE="edit_cam"#]
+ 		 [#inc alarm_server_camera_edit.html#]
+	[#endif#]	
+	
+[#endif TAB#]
+
+	
+
+
+

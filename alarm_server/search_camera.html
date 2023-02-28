@@ -1,0 +1,47 @@
+<!--  help view -->
+
+<a href="?view_mode=add_cam&tab=cam" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i>Добавить новую камеру</a>
+
+[#if RESULT#]
+<form action="?" method="post" name="frmListalarm_server_cam" style="padding:0px" class="form">
+<table class="table table-striped">
+<thead>
+ <tr>
+  <th>Место</th> 
+  <th>SerialID</th>
+  <th>Adress</th>
+  <th>ID</th>
+
+  <th>Время события</th>
+ </tr>
+ </thead>
+[#begin RESULT#]
+<tr>
+ <td>[#place#]</td>
+ <td>[#serialID#]</td>
+ <td>[#Adress#]</td>
+ <td>[#ID#]</td>
+<td width="150"> 
+  [#if "<#ACTION#>"=="admin"#]
+   
+    <a class="btn btn-default btn-sm" href="?view_mode=edit_cam&tab=cam&id=[#ID#]"><i class="glyphicon glyphicon-pencil"></i></a>
+ 
+    <a class="btn btn-default btn-sm" href="?view_mode=delete_camera&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')"><i class="glyphicon glyphicon-remove"></i></a>
+
+  [#endif ACTION#]
+ </td>
+
+</tr>
+[#end RESULT#]
+</table>
+<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
+<input type="hidden" name="view_mode" value="multiple_alarm_server_cam">
+</form>
+<!-- / search results (list) -->
+[#else RESULT#]
+<div>&nbsp;</div>
+<div class="alert alert-warning">
+<#LANG_NO_RECORDS_FOUND#>
+</div>
+[#endif RESULT#]
+<!-- / results -->

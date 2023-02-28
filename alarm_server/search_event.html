@@ -1,0 +1,86 @@
+<!-- влок поиска по фильтру -->
+<div class="row">
+ <div class="col-md-8">
+  <form action="?" method="get" class="form-inline">
+   <div class="form-group">
+    <select name="action_type" class="form-control">
+     <option value="">Событие</option>
+     [#begin EVENT#]
+     <option value="[#EVENT#]"[#if ACTION_TYPE="<#EVENT#>"#] selected[#endif#]>[#EVENT#]</option>
+     [#end EVENT#]
+    </select>
+   </div>
+   <div class="form-group">
+    <input type="text" name="search" value="<#SEARCH#>" placeholder="<#LANG_SEARCH#>" class="form-control">
+   </div>
+   <div class="form-group">
+    <input id="time_start" name="from" value="[#FROM#]" type="text" placeholder="<#LANG_GENERAL_STARTING#>" class="form-control datepicker">
+   </div>
+   <div class="form-group">
+    <input id="time_start" name="to" value="[#TO#]" type="text" placeholder="<#LANG_GENERAL_ENDING#>" class="form-control datepicker">
+   </div>
+
+   <div class="form-group">
+    <input type="submit" name="submit" value="<#LANG_SEARCH#>" class="btn btn-default btn-primary">
+   </div>
+   [#if FROM!="" || TO!="" OR SEARCH!="" OR ACTION_TYPE!=""#]
+   <div class="form-group">
+    <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
+   </div>
+   [#endif#]
+  </form>
+<!-- влок поиска по фильтру -->
+<!-- кнопка очистить записи -->
+ </div>
+ <div class="col-md-4 text-right">
+  <a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_all" class="btn btn-default btn-danger" onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_CLEAR_ALL#></a>
+ </div>
+</div>
+<!-- кнопка очистить записи -->
+
+<!-- results -->
+[#if RESULT#]
+<!-- paging -->
+<div>[#PAGINATOR#]</div>
+<!-- / paging -->
+<!-- search results (list) -->
+<!-- таблица вывода событий -->
+<!-- search results (list) -->
+<form action="?" method="post" name="frmListalarm_server" style="padding:0px" class="form">
+<table class="table table-striped">
+<thead>
+ <tr>
+  <th>Место</th> 
+  <th>Тип сообщения</th>
+  <th>ID</th>
+  <th>Статус</th>
+  <th>Событие</th>
+  <th>Время события</th>
+ </tr>
+ </thead>
+[#begin RESULT#]
+<tr>
+ <td>[#TITLE#]</td> 
+ <td>[#TYPE#]</td>
+ <td>[#SerialID#]</td>
+ <td>[#STATUS#]</td>
+ <td>[#EVENT#] </td>
+ <td>[#StartTime#] <div align="right">[<a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_event&id=[#ID#]"><#LANG_DELETE#></a>]</div></td>
+</tr>
+[#end RESULT#]
+</table>
+<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
+<input type="hidden" name="view_mode" value="multiple_alarm_server">
+</form>
+<!-- / search results (list) -->
+<!-- paging -->
+[#PAGINATOR#]
+<!-- / paging -->
+[#else RESULT#]
+<div>&nbsp;</div>
+<!--  нет результата -->
+<div class="alert alert-warning">
+<#LANG_NO_RECORDS_FOUND#>
+</div>
+[#endif RESULT#]
+<!-- / нет результата -->
