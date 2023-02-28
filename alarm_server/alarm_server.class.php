@@ -142,7 +142,8 @@ function admin(&$out) {
 
 //если id пустой то редактирование текущей  
   if ($this->view_mode=='edit_cam') {
-   $this->edit_alarm_server_camera($out, $this->id);  
+   $this->edit_alarm_server_camera($out, $this->id);
+   DebMes($this->result);
   }
 
 // удаление записи об выбранной камере

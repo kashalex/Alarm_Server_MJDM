@@ -1,4 +1,19 @@
 
+
+<ul class="breadcrumb">
+<li> 
+<a href="?"><#LANG_HOME#></a>
+</li>
+<span class="divider">/</span>
+<li class="active">
+[#if ID=""#]
+<#LANG_NEW_RECORD#>
+[#else#]
+<#LANG_EDIT_RECORD#>
+[#endif#]
+</li>
+</ul>
+
 <!-- Table 'alarm_server_camera' edit -->
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 [#if OK#]
@@ -8,11 +23,7 @@
 <div class="alert alert-danger"><#LANG_FILLOUT_REQURED#></div>
 [#endif ERR#]
 <fieldset>
-[#if ID=""#]
-<legend><#LANG_NEW_RECORD#></legend>
-[#else#]
-<legend><#LANG_EDIT_RECORD#></legend>
-[#endif id#]
+
 <!-- TITLE (varchar) -->
 <div class="form-group[#if ERR_TITLE#] has-error[#endif#]">
  <label for="title" class="col-lg-3 control-label">
