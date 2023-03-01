@@ -52,7 +52,7 @@ class WebSocketServer {
     private $resource;
 
 
-    public function __construct($ip = '192.168.1.126', $port = 15002) {
+    public function __construct($ip = 'ПОСТАВИТЬ СВОЙ', $port = 15002) {
         $this->ip = $ip;
         $this->port = $port;				
 		//echo 'Класс WebSocket сервера создан'. PHP_EOL;

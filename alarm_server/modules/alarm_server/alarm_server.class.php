@@ -267,8 +267,8 @@ public static function response($data) {
 // Если запись есть, значит и камера с таким серийником есть, забираем название месторасположения и добавляем в событие.
 	$title=$rec[PLACE];
 	}	
-	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[StartTime];	   
-	DebMes($text);	
+	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[SerialID]." ".$data[StartTime]." ".$data[Address];	   
+	//DebMes($text);	
 // полученные  данные пишем в базу	
 	$Record = Array();
 	$Record['TYPE'] = $data[Type];
