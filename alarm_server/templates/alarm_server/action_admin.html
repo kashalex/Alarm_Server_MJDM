@@ -1,0 +1,58 @@
+<!-- / Вывод модуля XRAY -->
+<p>[#module name="xray" action="service" cycle="alarm_server"#]</p>
+<!-- / Вывод модуля XRAY -->
+
+<!-- / Вывод Вкладок -->
+<!-- source select -->
+<ul class="nav nav-tabs">
+  <li[#if DATA_SOURCE!="events" && DATA_SOURCE!=""#] [#else#] class="active"[#endif#]>
+   <a href="?data_source=events">События</a>
+  </li>
+  <li[#if DATA_SOURCE!="camera"#] [#else#] class="active"[#endif#]>
+   <a href="?data_source=camera">Камеры</a>
+  </li>
+</ul>
+<div>&nbsp;</div> 
+<!-- / source select -->
+
+ <!-- action usual -->
+ [#if DATA_SOURCE="events" || DATA_SOURCE=""#]
+ <!-- table events search -->
+ [#if VIEW_MODE="search_events" || VIEW_MODE=""#]
+  [#inc search_event.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table events search -->
+ <!-- table events edit -->
+ [#if VIEW_MODE="edit_events"#]
+   
+ [#endif VIEW_MODE#]
+ <!-- / table events edit -->
+ <!-- table events view --> 
+ [#if VIEW_MODE="view_events"#]
+   
+ [#endif VIEW_MODE#]
+ <!-- / table events view -->
+ [#endif DATA_SOURCE#]
+ 
+ <!-- action usual -->
+ [#if DATA_SOURCE="camera"#]
+ <!-- table camera search -->
+ [#if VIEW_MODE="search_camera" || VIEW_MODE=""#]
+  [#inc search_camera.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table camera search -->
+ <!-- table camera edit -->
+ [#if VIEW_MODE="edit_camera"#]
+   [#inc edit_camera.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table camera edit -->
+ <!-- table camera view --> 
+ [#if VIEW_MODE="add_camera"#]
+   [#inc edit_camera.html#]
+ [#endif VIEW_MODE#]
+ <!-- / table camera view -->
+ [#endif DATA_SOURCE#]
+	
+
+
+

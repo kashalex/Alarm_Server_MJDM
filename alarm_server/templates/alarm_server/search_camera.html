@@ -1,6 +1,6 @@
 <!--  help view -->
 
-<a href="?view_mode=add_cam&tab=cam" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i>Добавить новую камеру</a>
+<a href="?data_source=<#DATA_SOURCE#>&view_mode=add_camera" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i>Добавить новую камеру</a>
 
 [#if RESULT#]
 <form action="?" method="post" name="frmListalarm_server_cam" style="padding:0px" class="form">
@@ -12,23 +12,22 @@
   <th>SerialID</th>
   <th>Adress</th>
   <th>ID</th>
-
   <th>Время события</th>
  </tr>
  </thead>
 [#begin RESULT#]
 <tr>
  <td>[#TITLE#]</td>
- <td>[#place#]</td>
- <td>[#serialID#]</td>
- <td>[#Adress#]</td>
+ <td>[#PLACE#]</td>
+ <td>[#SERIALID#]</td>
+ <td>[#ADRESS#]</td>
  <td>[#ID#]</td>
 <td width="150"> 
   [#if "<#ACTION#>"=="admin"#]
    
-    <a class="btn btn-default btn-sm" href="?data_source=<#DATA_SOURCE#>&view_mode=edit_cam&tab=cam&id=[#ID#]"><i class="glyphicon glyphicon-pencil"></i></a>
+    <a class="btn btn-default btn-sm" href="?data_source=<#DATA_SOURCE#>&view_mode=edit_camera&id=[#ID#]"><i class="glyphicon glyphicon-pencil"></i></a>
  
-    <a class="btn btn-default btn-sm" href="?view_mode=delete_camera&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')"><i class="glyphicon glyphicon-remove"></i></a>
+    <a class="btn btn-default btn-sm" href="?data_source=<#DATA_SOURCE#>&view_mode=delete_camera&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')"><i class="glyphicon glyphicon-remove"></i></a>
 
   [#endif ACTION#]
  </td>

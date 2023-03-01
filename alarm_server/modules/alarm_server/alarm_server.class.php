@@ -130,29 +130,27 @@ function admin(&$out) {
   //if ($this->data_source=='alarm_server_camera' || $this->data_source=='') { зачем не знаю, это было
 //-------------Работает---------------------------
 // поиск записей о камерах и вывод в таблицу
-
-	if ($this->tab=='cam') {
-	$this->search_alarm_server_camera($out);
+if ($this->data_source=='camera') {
+  if ($this->view_mode=='' || $this->view_mode=='search_camera') {
+   $this->search_alarm_server_camera($out);
   }
-  
-//добавление новой камеры если id не пустой  
-  if ($this->view_mode=='add_cam') {
-   $this->edit_alarm_server_camera($out, $this->id);   
-  }  
-
-//если id пустой то редактирование текущей  
-  if ($this->view_mode=='edit_cam') {
+//добавление новой камеры если id пустой 
+  if ($this->view_mode=='edit_camera') {
    $this->edit_alarm_server_camera($out, $this->id);
-   DebMes($this->result);
-  }
-
+   //DebMes("result=".$this->result);
+  }  
 // удаление записи об выбранной камере
-   if ($this->view_mode=='delete_camera') {
-	   //DebMes ("SELECT * FROM alarm_server WHERE ID=$this->id");
-	   SQLExec("DELETE FROM alarm_server_camera WHERE ID='".(int)$this->id."'");
-	   $this->redirect("?tab=cam");
-  }
-
+	if ($this->view_mode=='delete_camera') {
+		//DebMes ("SELECT * FROM alarm_server WHERE ID=$this->id");
+		SQLExec("DELETE FROM alarm_server_camera WHERE ID='".(int)$this->id."'");
+		$this->redirect("?data_source=camera");
+	}   
+}
+  
+ 
+  //if ($this->view_mode=='add_cam') {
+   //$this->edit_alarm_server_camera($out, $this->id);   
+  //}  
 //--------------не трогать------------------------  
 
 
@@ -161,25 +159,38 @@ function admin(&$out) {
  }
  
 //----------------- работает ---------------------------
+ if ($this->data_source=='events' || $this->data_source=='') {
+  if ($this->view_mode=='' || $this->view_mode=='search_events') {
+   $this->search_alarm_server_event($out);
+  }
+  if ($this->view_mode=='delete_all') {
+	SQLExec("DELETE FROM alarm_server WHERE 1");
+	$this->redirect("?data_source=events");	   
+  }
+  if ($this->view_mode=='delete_events') {
+	SQLExec("DELETE FROM alarm_server WHERE ID='".(int)$this->id."'");
+	$this->redirect("?data_source=events");
+  }
+ }
 // поиск записей о событиях и вывод в таблицу
-	if ($this->tab=='' || $this->tab=='event') {  
+/* 	if ($this->tab=='' || $this->tab=='event') {  
 		$this->search_alarm_server_event($out);
-	}
+	} */
 
 // удаление записи одного события
-	if ($this->view_mode=='delete_event') {
+/* 	if ($this->view_mode=='delete_event') {
 		//DebMes ("SELECT * FROM alarm_server WHERE ID=$this->id");
 		SQLExec("DELETE FROM alarm_server WHERE ID='".(int)$this->id."'");
-		$this->redirect("?");
+		$this->redirect("?"); */
 	}
 // удаление всех записей из событий	
-	if ($this->view_mode=='delete_all'){
+/* 	if ($this->view_mode=='delete_all'){
 	   SQLExec("DELETE FROM alarm_server WHERE 1");
 	   $this->redirect("?");
-	}		
+	} */		
 //--------------- не трогать ---------------------------
 
-}
+//}
 /**
 * FrontEnd
 *
@@ -238,23 +249,23 @@ function usual(&$out) {
 public static function response($data) {
 	$table_name='alarm_server_camera';
 //Выбираем из таблицы камер записи по полученному серийнику
-	$rec=SQLSelectOne("SELECT * FROM $table_name WHERE serialID='$data[SerialID]'");	
+	$rec=SQLSelectOne("SELECT * FROM $table_name WHERE SERIALID='$data[SerialID]'");	
 // Проверяем на наличие записей		
-	if (!rec[SerialID])
+	if (!rec[SERIALID])
 	{
 // Если нет таких записей, то надо эту камеру добавить в базу.
-	DebMes("Такой камеры нет в базе $table_name count($res)");
+	DebMes("Такой камеры нет в базе ". $table_name.count($res));
 	$title="NoName";	
 	//$Record = Array();
-	//$Record['SerialID'] = $data[SerialID];
-	//$Record['Address'] = $data[Address];
-	//$Record['Place'] = "Надо изменить на свое";
+	//$Record['SERIALID'] = $data[SerialID];
+	//$Record['ADRESS'] = $data[Address];
+	//$Record['PLACE'] = "Надо изменить на свое";
 	//$Record['ID']=SQLInsert($table_name, $Record);
 	}
 	else
 	{
 // Если запись есть, значит и камера с таким серийником есть, забираем название месторасположения и добавляем в событие.
-	$title=$rec[place];
+	$title=$rec[PLACE];
 	}	
 	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[StartTime];	   
 	DebMes($text);	
@@ -265,7 +276,7 @@ public static function response($data) {
 	$Record['EVENT'] = $data[Event];
 	$Record['StartTime'] = $data[StartTime];
 	$Record['TITLE'] = $title;
-	$Record['SerialID'] = $data[SerialID];
+	$Record['SERIALID'] = $data[SerialID];
 	$Record['ID']=SQLInsert('alarm_server', $Record);	
 // отправка в телеграмм, надо настроить динамическое присвоение ID пользователя.
 	include_once(DIR_MODULES . 'telegram/telegram.class.php');
@@ -308,14 +319,14 @@ public static function response($data) {
  function dbInstall($data) {
 /*
 alarm_server_camera - 
-alarm_server -  alarm_server: serialID int(10) NOT NULL DEFAULT '0'
+alarm_server -  
 */
   $data = <<<EOD
  alarm_server_camera: ID int(10) unsigned NOT NULL auto_increment
  alarm_server_camera: TITLE varchar(100) NOT NULL DEFAULT ''
- alarm_server_camera: place varchar(255) NOT NULL DEFAULT ''
- alarm_server_camera: serialID varchar(255) NOT NULL DEFAULT ''
- alarm_server_camera: Adress varchar(255) NOT NULL DEFAULT ''
+ alarm_server_camera: PLACE varchar(255) NOT NULL DEFAULT ''
+ alarm_server_camera: SERIALID varchar(255) NOT NULL DEFAULT ''
+ alarm_server_camera: ADRESS varchar(255) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_METHOD varchar(100) NOT NULL DEFAULT ''
@@ -324,7 +335,7 @@ alarm_server -  alarm_server: serialID int(10) NOT NULL DEFAULT '0'
  alarm_server: TYPE varchar(255) NOT NULL DEFAULT ''
  alarm_server: EVENT varchar(255) NOT NULL DEFAULT ''
  alarm_server: StartTime datetime NOT NULL DEFAULT ''
-
+ alarm_server: SERIALID int(10) NOT NULL DEFAULT '0'
  alarm_server: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  alarm_server: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  alarm_server: LINKED_METHOD varchar(100) NOT NULL DEFAULT ''

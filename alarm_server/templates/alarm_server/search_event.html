@@ -33,7 +33,7 @@
 <!-- кнопка очистить записи -->
  </div>
  <div class="col-md-4 text-right">
-  <a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_all" class="btn btn-default btn-danger" onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_CLEAR_ALL#></a>
+  <a href="?data_source=events&view_mode=delete_all" class="btn btn-default btn-danger" onclick="return confirm('<#LANG_ARE_YOU_SURE#>');"><#LANG_CLEAR_ALL#></a>
  </div>
 </div>
 <!-- кнопка очистить записи -->
@@ -62,10 +62,10 @@
 <tr>
  <td>[#TITLE#]</td> 
  <td>[#TYPE#]</td>
- <td>[#SerialID#]</td>
+ <td>[#SERIALID#]</td>
  <td>[#STATUS#]</td>
  <td>[#EVENT#] </td>
- <td>[#StartTime#] <div align="right">[<a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_event&id=[#ID#]"><#LANG_DELETE#></a>]</div></td>
+ <td>[#StartTime#] <div align="right">[<a href="?data_source=events&view_mode=delete_events&id=[#ID#]"><#LANG_DELETE#></a>]</div></td>
 </tr>
 [#end RESULT#]
 </table>
