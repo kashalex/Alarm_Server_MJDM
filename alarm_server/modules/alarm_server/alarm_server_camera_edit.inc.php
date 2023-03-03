@@ -32,6 +32,13 @@
     $out['SERIALID']=1;
     $ok=0;
    }
+  //updating 'IP' (varchar)
+  global $rtsp;
+   $rec['RTSP']=$rtsp;
+   if ($rec['RTSP']=='') {
+    $out['RTSP']=1;
+    $ok=0;
+   }   
   //updating 'Adress' (varchar)
    global $adress;
    $rec['ADRESS']=$adress;

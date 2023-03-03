@@ -1,3 +1,59 @@
+
+<div>
+	<a class="btn btn-primary" href="#" onClick="$('#settings').toggle();return false;"><#LANG_SETUP#></a>
+	<div class="float-right">
+		<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#about">About&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span></button>
+	</div>
+</div>
+
+<!-- table zwave_devices search -->
+<div style="display:none" id='settings'>
+&nbsp;
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+<fieldset>
+<div class="form-group">
+ <label class="control-label"[#if ERR_IP#] style="color:red;font-weight:bold"[#endif#]>
+ IP Адресс:
+ (*)
+ </label>
+ <div class="controls"><input type="text" name="ip" value="[#IP#]" class="input"></div>
+</div>
+<div class="form-group">
+ <label class="control-label"[#if ERR_PORT#] style="color:red;font-weight:bold"[#endif#]>
+ Порт:
+ (*)
+ </label>
+ <div class="controls"><input type="text" name="port" value="[#PORT#]" class="input"></div>
+</div>
+
+<div class="form-group">
+ <label class="col-lg-3 control-label"[#if ERR_ID_USERNAME#] style="color:red;font-weight:bold"[#endif#]> User ID:</label>
+ <div class="controls"><input type="text" name="id_username" value="[#ID_USERNAME#]" class="input"></div> 
+<div class="col-lg-8"> 
+ <p class="help-block">
+	ID пользователя из модуля телеграмм, необходим для отправки фото при возникновении тревоги.
+ </p>
+</div>
+</div>
+<div class="form-group">
+	<label class="col-lg-3 control-label">Отправлять фото:</label>
+		<div class="col-lg-8">
+			<input name="foto" value="1" type="radio"[#if FOTO="1"#] checked[#endif#]>Вкл
+			<input name="foto" value="0" type="radio"[#if FOTO="0"#] checked[#endif#]>Выкл
+				<p class="help-block">
+					Отправлять фото при возникновении тревоги.
+				</p>
+		</div>
+</div>
+<div class="form-actions">
+<button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
+<input type="hidden" name="view_mode" value="update_settings">
+<input type="hidden" name="mode" value="update">
+</div>
+</fieldset>
+</form>
+</div>
+
 <!-- / Вывод модуля XRAY -->
 <p>[#module name="xray" action="service" cycle="alarm_server"#]</p>
 <!-- / Вывод модуля XRAY -->

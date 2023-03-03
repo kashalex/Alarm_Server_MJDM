@@ -52,13 +52,15 @@ class WebSocketServer {
     private $resource;
 
 
-    public function __construct($ip = 'ПОСТАВИТЬ СВОЙ', $port = 15002) {
-        $this->ip = $ip;
+    public function __construct($ip = '192.168.1.126', $port = 15002) {
+ 		include_once(dirname(__FILE__).'/alarm_server.class.php');       
+		include_once(DIR_MODULES . 'telegram/telegram.class.php');		
+		$this->ip = $ip;
         $this->port = $port;				
 		//echo 'Класс WebSocket сервера создан'. PHP_EOL;
-		include_once(DIR_MODULES . 'alarm_server/alarm_server.class.php');
-		$Alarm_server_module = new Alarm_server();
-		// $Alarm_server_module->name, PHP_EOL;
+		$this->alarm_server = new alarm_server();	
+		$this->telegram_module = new telegram();
+		
 		return true;
     }
 
@@ -195,11 +197,12 @@ class WebSocketServer {
 			}
 			// получено сообщение от клиента, вызываем пользовательскую
 			// функцию, чтобы обработать полученные данные
-
-			Alarm_server::response($decoded);
+				$this->alarm_server->getConfig();
+				$id_user=$this->alarm_server->config['ID_USERNAME'];	
+				$foto=$this->alarm_server->config['FOTO'];				
+				$this->alarm_server->response($decoded,$id_user,$foto,$this->telegram_module);
 
 		}
-
 		// если истекло ограничение по времени, останавливаем сервер
 		if ($this->timeLimit && time() - $this->startTime > $this->timeLimit) {
 			$this->debug('Time limit. Stopping server.');

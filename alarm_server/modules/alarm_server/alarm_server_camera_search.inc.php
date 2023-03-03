@@ -3,7 +3,6 @@
 * @version 0.1 (wizard)
 */
  
-   DebMes("Add");
  global $session;
   if ($this->owner->name=='panel') {
    $out['CONTROLPANEL']=1;

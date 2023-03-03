@@ -9,6 +9,8 @@
 //
 //
 class alarm_server extends module {
+	
+
 /**
 * alarm_server
 *
@@ -21,6 +23,8 @@ function __construct() {
   $this->title="Alarm server";
   $this->module_category="<#LANG_SECTION_APPLICATIONS#>";
   $this->checkInstalled();
+  include_once(DIR_MODULES . 'telegram/telegram.class.php');
+  $this->telegram_module = new telegram();
 }
 /**
 * saveParams
@@ -121,20 +125,39 @@ function run() {
 */
 function admin(&$out) {
  $this->getConfig();
-
+ $out['API_URL']=$this->config['IP'];
+ if (!$out['IP']) {
+  $out['IP']='192.168.1.126';
+ }
+ $out['PORT']=$this->config['PORT'];
+  if (!$out['PORT']) {
+  $out['PORT']='15002';
+ }
+ $out['ID_USERNAME']=$this->config['ID_USERNAME'];
+ $out['FOTO']=$this->config['FOTO'];
+ 
+ if ($this->view_mode=='update_settings') {
+   global $ip;
+   $this->config['IP']=$ip;
+   global $port;
+   $this->config['PORT']=$port;
+   global $id_username;
+   $this->config['ID_USERNAME']=$id_username;
+   global $foto;
+   $this->config['FOTO']=$foto;
+   $this->saveConfig();
+   $this->redirect("?");
+ }
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
  }
-  //DebMes ("tab=".$this->tab." view_mode=".$this->view_mode." ID=".$this->id);  для отладки
-  
-  //if ($this->data_source=='alarm_server_camera' || $this->data_source=='') { зачем не знаю, это было
 //-------------Работает---------------------------
 // поиск записей о камерах и вывод в таблицу
 if ($this->data_source=='camera') {
   if ($this->view_mode=='' || $this->view_mode=='search_camera') {
    $this->search_alarm_server_camera($out);
   }
-//добавление новой камеры если id пустой 
+//добавление новой камеры если id пустой, если не пустой, то редактирование
   if ($this->view_mode=='edit_camera') {
    $this->edit_alarm_server_camera($out, $this->id);
    //DebMes("result=".$this->result);
@@ -146,11 +169,6 @@ if ($this->data_source=='camera') {
 		$this->redirect("?data_source=camera");
 	}   
 }
-  
- 
-  //if ($this->view_mode=='add_cam') {
-   //$this->edit_alarm_server_camera($out, $this->id);   
-  //}  
 //--------------не трогать------------------------  
 
 
@@ -159,37 +177,24 @@ if ($this->data_source=='camera') {
  }
  
 //----------------- работает ---------------------------
+//вывод событий на страничку
  if ($this->data_source=='events' || $this->data_source=='') {
   if ($this->view_mode=='' || $this->view_mode=='search_events') {
    $this->search_alarm_server_event($out);
   }
-  if ($this->view_mode=='delete_all') {
+//удаление всех записей о событиях 
+ if ($this->view_mode=='delete_all') {
 	SQLExec("DELETE FROM alarm_server WHERE 1");
 	$this->redirect("?data_source=events");	   
   }
+//удаление записи о выбранном событии
   if ($this->view_mode=='delete_events') {
 	SQLExec("DELETE FROM alarm_server WHERE ID='".(int)$this->id."'");
 	$this->redirect("?data_source=events");
   }
- }
-// поиск записей о событиях и вывод в таблицу
-/* 	if ($this->tab=='' || $this->tab=='event') {  
-		$this->search_alarm_server_event($out);
-	} */
-
-// удаление записи одного события
-/* 	if ($this->view_mode=='delete_event') {
-		//DebMes ("SELECT * FROM alarm_server WHERE ID=$this->id");
-		SQLExec("DELETE FROM alarm_server WHERE ID='".(int)$this->id."'");
-		$this->redirect("?"); */
-	}
-// удаление всех записей из событий	
-/* 	if ($this->view_mode=='delete_all'){
-	   SQLExec("DELETE FROM alarm_server WHERE 1");
-	   $this->redirect("?");
-	} */		
+ }		
 //--------------- не трогать ---------------------------
-
+}
 //}
 /**
 * FrontEnd
@@ -246,12 +251,13 @@ function usual(&$out) {
   //to-do
  }
 
-public static function response($data) {
+public static function response($data,$id_user,$foto,$telegram_module) {
 	$table_name='alarm_server_camera';
+	
 //Выбираем из таблицы камер записи по полученному серийнику
 	$rec=SQLSelectOne("SELECT * FROM $table_name WHERE SERIALID='$data[SerialID]'");	
 // Проверяем на наличие записей		
-	if (!rec[SERIALID])
+	if (!$rec[SERIALID])
 	{
 // Если нет таких записей, то надо эту камеру добавить в базу.
 	DebMes("Такой камеры нет в базе ". $table_name.count($res));
@@ -266,9 +272,9 @@ public static function response($data) {
 	{
 // Если запись есть, значит и камера с таким серийником есть, забираем название месторасположения и добавляем в событие.
 	$title=$rec[PLACE];
+	$rtsp=$rec[RTSP];	
 	}	
-	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[SerialID]." ".$data[StartTime]." ".$data[Address];	   
-	//DebMes($text);	
+	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[StartTime];	   	
 // полученные  данные пишем в базу	
 	$Record = Array();
 	$Record['TYPE'] = $data[Type];
@@ -279,10 +285,18 @@ public static function response($data) {
 	$Record['SERIALID'] = $data[SerialID];
 	$Record['ID']=SQLInsert('alarm_server', $Record);	
 // отправка в телеграмм, надо настроить динамическое присвоение ID пользователя.
-	include_once(DIR_MODULES . 'telegram/telegram.class.php');
-	$telegram_module = new telegram();
-	if ($data[Event]=='HumanDetect')
-	$telegram_module->sendMessageToUser(1396815589, $text);	   
+//include_once(DIR_MODULES . 'telegram/telegram.class.php');
+//$telegram_module = new telegram();	
+	if ($data[Event]=='HumanDetect'){
+	$telegram_module->sendMessageToUser($id_user, $text);
+	if ($foto=true){
+	//exec('sudo ffmpeg -i rtsp://192.168.1.63:554/user=admin_password=imfzZCJe_channel=0_stream=0.sdp?real_stream -y -f mjpeg -t 0.110 -s 1280x720 
+	//DebMes('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 /mnt/media/out.jpg');
+	exec('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 /mnt/media/out.jpg');
+	$jpg="/mnt/media/out.jpg";
+	$telegram_module->sendImageToUser($id_user, $jpg);
+	}
+	}
     }
 
 
@@ -327,6 +341,7 @@ alarm_server -
  alarm_server_camera: PLACE varchar(255) NOT NULL DEFAULT ''
  alarm_server_camera: SERIALID varchar(255) NOT NULL DEFAULT ''
  alarm_server_camera: ADRESS varchar(255) NOT NULL DEFAULT ''
+ alarm_server_camera: IP varchar(15) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  alarm_server_camera: LINKED_METHOD varchar(100) NOT NULL DEFAULT ''
