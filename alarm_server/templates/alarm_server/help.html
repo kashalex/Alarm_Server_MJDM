@@ -1,0 +1,24 @@
+<!--  help view -->
+[#if DATA_SOURCE="help"#]
+
+<div class="panel panel-info">
+ <div class="panel-heading">Тревожный сервер,настройки.</div>
+  <div class="panel-body">
+   Поле IP адрес<br>
+   <code style="display:block">Указываем адрес MJDM. Также этот адрес указываем в настройках камеры.</code>
+   Поле Порт<br>
+   <code style="display:block">Указываем номер порта, по умолчанию 15002. Таже его указываем в настройках камеры.</code>
+   User ID<br>
+   <code style="display:block">ID пользователя используемое в модуле Телеграмм, если не указать, то соответственно отправки в телеграмм не будет<br></code>
+   Отправлять фото<br>
+   <code style="display:block">Думаю понятно<br></code>
+   Путь к фото<br>
+   <code style="display:block">Место размещения фото получаемого при возникновения тревоги.<br>
+   Фото делается при помощи такой команды: sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 .'.$patch<br>
+   $rtsp - путь к вашей камере по протоколу RTSP - rtsp://*IP*/user=*user*_password=* *_channel=0_stream=0.sdp?real_stream<br>
+   $patch -	место размещения фото</code>   
+   
+   </div>
+</div>
+[#endif VIEW_MODE#]
+<!-- / help view -->

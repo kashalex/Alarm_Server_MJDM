@@ -133,6 +133,7 @@ function admin(&$out) {
   if (!$out['PORT']) {
   $out['PORT']='15002';
  }
+ $out['PATCH']=$this->config['PATCH'];
  $out['ID_USERNAME']=$this->config['ID_USERNAME'];
  $out['FOTO']=$this->config['FOTO'];
  
@@ -145,6 +146,9 @@ function admin(&$out) {
    $this->config['ID_USERNAME']=$id_username;
    global $foto;
    $this->config['FOTO']=$foto;
+   global $patch;
+   $this->config['PATCH']=$patch;
+   
    $this->saveConfig();
    $this->redirect("?");
  }
@@ -251,7 +255,7 @@ function usual(&$out) {
   //to-do
  }
 
-public static function response($data,$id_user,$foto,$telegram_module) {
+public static function response($data,$id_user,$foto,$telegram_module,$patch='/var/www/html/out.jpg') {
 	$table_name='alarm_server_camera';
 	
 //Выбираем из таблицы камер записи по полученному серийнику
@@ -289,12 +293,13 @@ public static function response($data,$id_user,$foto,$telegram_module) {
 //$telegram_module = new telegram();	
 	if ($data[Event]=='HumanDetect'){
 	$telegram_module->sendMessageToUser($id_user, $text);
-	if ($foto=true){
+	if ($foto==true){
 	//exec('sudo ffmpeg -i rtsp://192.168.1.63:554/user=admin_password=imfzZCJe_channel=0_stream=0.sdp?real_stream -y -f mjpeg -t 0.110 -s 1280x720 
 	//DebMes('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 /mnt/media/out.jpg');
-	exec('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 /mnt/media/out.jpg');
-	$jpg="/mnt/media/out.jpg";
-	$telegram_module->sendImageToUser($id_user, $jpg);
+	//$patch="/mnt/media/out.jpg";	
+	exec('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 .'.$patch);
+
+	$telegram_module->sendImageToUser($id_user, $patch);
 	}
 	}
     }

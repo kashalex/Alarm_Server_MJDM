@@ -199,8 +199,9 @@ class WebSocketServer {
 			// функцию, чтобы обработать полученные данные
 				$this->alarm_server->getConfig();
 				$id_user=$this->alarm_server->config['ID_USERNAME'];	
-				$foto=$this->alarm_server->config['FOTO'];				
-				$this->alarm_server->response($decoded,$id_user,$foto,$this->telegram_module);
+				$foto=$this->alarm_server->config['FOTO'];
+				$patch=$this->alarm_server->config['PATCH'];				
+				$this->alarm_server->response($decoded,$id_user,$foto,$this->telegram_module,$patch);
 
 		}
 		// если истекло ограничение по времени, останавливаем сервер
