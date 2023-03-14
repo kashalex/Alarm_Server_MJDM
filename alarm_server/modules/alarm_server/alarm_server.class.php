@@ -278,6 +278,9 @@ public static function response($data,$id_user,$foto,$telegram_module,$patch='/v
 	$title=$rec[PLACE];
 	$rtsp=$rec[RTSP];	
 	}	
+
+// отправка в телеграмм, надо настроить динамическое присвоение ID пользователя.	
+	if ($data[Event]=='HumanDetect'){
 	$text = $title." ".$data[Type]." ".$data[Event]." ".$data[StartTime];	   	
 // полученные  данные пишем в базу	
 	$Record = Array();
@@ -287,17 +290,13 @@ public static function response($data,$id_user,$foto,$telegram_module,$patch='/v
 	$Record['StartTime'] = $data[StartTime];
 	$Record['TITLE'] = $title;
 	$Record['SERIALID'] = $data[SerialID];
-	$Record['ID']=SQLInsert('alarm_server', $Record);	
-// отправка в телеграмм, надо настроить динамическое присвоение ID пользователя.
-//include_once(DIR_MODULES . 'telegram/telegram.class.php');
-//$telegram_module = new telegram();	
-	if ($data[Event]=='HumanDetect'){
+	$Record['ID']=SQLInsert('alarm_server', $Record);		
 	$telegram_module->sendMessageToUser($id_user, $text);
 	if ($foto==true){
 	//exec('sudo ffmpeg -i rtsp://192.168.1.63:554/user=admin_password=imfzZCJe_channel=0_stream=0.sdp?real_stream -y -f mjpeg -t 0.110 -s 1280x720 
 	//DebMes('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 /mnt/media/out.jpg');
 	//$patch="/mnt/media/out.jpg";	
-	exec('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 .'.$patch);
+	exec('sudo ffmpeg -i '.$rtsp.' -y -f mjpeg -t 0.001 -s 1280x720 '.$patch);
 
 	$telegram_module->sendImageToUser($id_user, $patch);
 	}
